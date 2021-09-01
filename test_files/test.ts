@@ -1,2 +1,0 @@
-"UPPERCASE ERROR"
-"TecVan"

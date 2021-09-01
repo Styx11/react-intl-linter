@@ -1,27 +1,27 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "files.exclude": {
-        "out": false, // set this to true to hide the "out" folder with the compiled JS files
-        "dist": false // set this to true to hide the "dist" folder with the compiled JS files
-    },
-    "search.exclude": {
-        "out": true, // set this to false to include "out" folder in search results
-        "dist": true // set this to false to include "dist" folder in search results
-    },
-    // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off",
-    "editor.wordWrap": "on",
-	"editor.renderWhitespace": "all",
+	"files.exclude": {
+		"out": false
+	},
+	"search.exclude": {
+		"out": true,
+		"server": true
+	},
+	"files.trimTrailingWhitespace": true,
 	"editor.insertSpaces": false,
-    "editor.formatOnSave": true,
-	"editor.defaultFormatter": "vscode.typescript-language-features", // https://github.com/prettier/prettier-vscode#default-formatter
-	"[typescript]": {
-		"editor.defaultFormatter": "vscode.typescript-language-features"
+	"editor.tabSize": 4,
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.tsc.autoDetect": "off",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
 	},
-	"[typescriptreact]": {
-		"editor.defaultFormatter": "vscode.typescript-language-features"
-	},
-    "editor.tabSize": 4,
+	"eslint.workingDirectories": [
+		"./client",
+		"./server"
+	],
+	"eslint.trace.server": "off",
+	"eslint.lintTask.enable": false,
+	"eslint.format.enable": false,
 	"editor.detectIndentation": false,
 	"javascript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
 	"javascript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
@@ -37,4 +37,14 @@
 		"typescript",
 		"typescriptreact"
 	],
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "vscode.typescript-language-features", // https://github.com/prettier/prettier-vscode#default-formatter
+	"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"editor.wordWrap": "on",
+	"editor.renderWhitespace": "all",
 }

@@ -1,0 +1,7 @@
+UPPERCASE ERROR
+
+'一个文本'
+
+"这是另一个文本"
+
+"It's not me"
