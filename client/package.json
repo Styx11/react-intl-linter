@@ -1,22 +1,22 @@
 {
-	"name": "lsp-sample-client",
-	"description": "VSCode part of a language server",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
+	"name": "client",
+	"displayName": "React-Intl-Linter - Client",
 	"version": "0.0.1",
-	"publisher": "vscode",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Tecvan-fe/vscode-lsp-sample"
+	"description": "vscode linter extension for react-intl",
+	"repository": "git@github.com:Styx11/react-intl-linter.git",
+	"author": "styx11 <1654630248@qq.com>",
+	"license": "Apache-2.0 License",
+	"private": true,
+	"bugs": {
+		"url": "https://github.com/Styx11/react-intl-linter/issues"
 	},
 	"engines": {
 		"vscode": "^1.52.0"
 	},
+	"devDependencies": {
+		"@types/vscode": "1.52.0"
+	},
 	"dependencies": {
 		"vscode-languageclient": "^7.0.0"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.52.0",
-		"vscode-test": "^1.3.0"
 	}
 }

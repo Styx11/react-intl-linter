@@ -1,79 +1,59 @@
-import * as path from 'path';
-import * as pkg from '../../package.json';
-import { workspace, ExtensionContext } from 'vscode';
+'use strict';
 
-import
-{
-	LanguageClient,
-	LanguageClientOptions,
-	ServerOptions,
-	TransportKind,
-	DocumentSelector,
-} from 'vscode-languageclient/node';
+import * as path from 'path';
+import { ExtensionContext, window as Window } from 'vscode';
+import { LanguageClient, LanguageClientOptions, RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+
+import { getDocumentSelector } from './lib/util';
 
 let client: LanguageClient;
 
-export const ClientId = 'React-Intl-Linter-Client'
-
-export const ClientName = 'React Intl Linter Client'
-
-// 获取 package.json 文件配置的激活事件 activationEvents 对应的语言
-const getDocumentSelector = (): DocumentSelector =>
+export function activate(context: ExtensionContext): void
 {
-	const languagePrefix = /onLanguage:/
-	const activationEvents = pkg.activationEvents
-	if (!Array.isArray(activationEvents) || !activationEvents.length) return
-	return activationEvents.reduce((prevLangs: DocumentSelector, curAction: string) =>
-	{
-		if (!languagePrefix.test(curAction)) return prevLangs
-		const language = curAction.replace(languagePrefix, '')
-		return language ? prevLangs.concat({ scheme: 'file', language: language }) : prevLangs
-	}, [])
-};
+	// 指明语言服务器路径
+	const serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
 
-
-// VS Code 插件向外暴露两个函数：activate, deactivate 分别在插件激活/关闭时触发
-export function activate(context: ExtensionContext)
-{
-	// The server is implemented in node
-	const serverModule = context.asAbsolutePath(
-		path.join('server', 'out', 'server.js')
-	);
-	// The debug options for the server
-	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
-	const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
-
-	// 服务端配置信息
-	// 对于 Node 形式的插件，只需要定义入口文件即可，vscode 会帮我们管理好进程的状态
-	const serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
-		debug: {
-			module: serverModule,
-			transport: TransportKind.ipc,
-			options: debugOptions
-		}
+	// 语言服务器配置
+	let serverOptions: ServerOptions = {
+		run: { module: serverModule, transport: TransportKind.ipc, options: { cwd: process.cwd() } },
+		debug: { module: serverModule, transport: TransportKind.ipc, options: { execArgv: ['--nolazy', '--inspect=6011'], cwd: process.cwd() } }
 	};
 
-	// Options to control the language client
-	const clientOptions: LanguageClientOptions = {
-		// 定义插件在什么时候生效
+	// 客户端配置
+	let clientOptions: LanguageClientOptions = {
 		documentSelector: getDocumentSelector(),
-		synchronize: {
-			// Notify the server about file changes to '.clientrc files contained in the workspace
-			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+		diagnosticCollectionName: 'react-intl-linter',
+		revealOutputChannelOn: RevealOutputChannelOn.Never,
+		progressOnInitialization: true,
+		middleware: {
+			// 样例中间件
+			executeCommand: async (command, args, next) =>
+			{
+				const selected = await Window.showQuickPick(['Visual Studio', 'Visual Studio Code']);
+				if (selected === undefined)
+				{
+					return next(command, args);
+				}
+				args = args.slice(0);
+				args.push(selected);
+				return next(command, args);
+			}
 		}
 	};
 
-	// Create the language client and start the client.
-	client = new LanguageClient(
-		ClientId,
-		ClientName,
-		serverOptions,
-		clientOptions
-	);
+	try
+	{
+		client = new LanguageClient('React-Intl-Linter', serverOptions, clientOptions);
+	} catch (err)
+	{
+		Window.showErrorMessage(`The extension couldn't be started. See the output channel for details.`);
+		return;
+	}
+	client.registerProposedFeatures();
 
-	// Start the client. This will also launch the server
-	client.start();
+	context.subscriptions.push(
+		client.start(),
+	);
 }
 
 export function deactivate(): Thenable<void> | undefined
