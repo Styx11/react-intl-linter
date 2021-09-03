@@ -2,12 +2,13 @@
 
 import
 {
-	CodeAction, CodeActionKind, Command, createConnection, Position, TextDocumentEdit,
-	TextDocuments, TextDocumentSyncKind, TextEdit, TextDocumentChangeEvent, ProposedFeatures
+	CodeAction, CodeActionKind, Command, createConnection, TextDocumentEdit,
+	TextDocuments, TextDocumentSyncKind, TextEdit, TextDocumentChangeEvent, ProposedFeatures, CodeActionParams, ExecuteCommandParams, Diagnostic
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { validateMessage } from './lib/validator';
+import { getCodeActionMessage, debounce, ContentChangeDelay } from './lib/util';
 
 const connection = createConnection(ProposedFeatures.all);
 connection.console.info(`Sample server running in node ${process.version}`);
@@ -42,25 +43,40 @@ documents.onDidOpen((event: TextDocumentChangeEvent<TextDocument>) =>
 });
 
 // 当文件内容改变时
-documents.onDidChangeContent((event: TextDocumentChangeEvent<TextDocument>) =>
+documents.onDidChangeContent(debounce((event: TextDocumentChangeEvent<TextDocument>) =>
 {
 	const document = event.document
 	const diagnostics = validateMessage(document)
 	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
-});
+}, ContentChangeDelay));
 
-connection.onCodeAction((params) =>
+// 正在 Code Action 中处理的错误
+let CodeActionDiagnostic: Diagnostic | null
+
+// code action 事件
+// 触发时机：光标变化时（点击文本或通过键盘移动光标）
+// 返回：如果光标所在范围包含有错误信息（diagnostic）则会在 params.context.diagnostics 中存入一个非空数组，里面就有我们需要的 diagnostic 信息
+connection.onCodeAction((params: CodeActionParams) =>
 {
+	const { diagnostics } = params.context
 	const textDocument = documents.get(params.textDocument.uri);
-	if (textDocument === undefined)
-	{
-		return undefined;
-	}
-	const title = 'With User Input';
-	return [CodeAction.create(title, Command.create(title, 'sample.fixMe', textDocument.uri), CodeActionKind.QuickFix)];
+
+	// 光标所在文本不包含错误信息时返回
+	if (!Array.isArray(diagnostics) || !diagnostics.length || !textDocument) return undefined
+
+	const diagnostic = CodeActionDiagnostic = diagnostics[0]
+
+	// 用于 CodeAction 的文本和原始引号之间的文本
+	const [codeActionMessage, rawMessage] = getCodeActionMessage(diagnostic.message);
+
+	// 点击 CodeAction 后发出的指令会被 client middleware 捕获并处理
+	return [
+		CodeAction.create(codeActionMessage, Command.create(codeActionMessage, 'sample.fixMe', textDocument.uri, rawMessage), CodeActionKind.QuickFix)
+	];
 });
 
-connection.onExecuteCommand(async (params) =>
+// Code Action 指令经 client middleware 处理后执行
+connection.onExecuteCommand(async (params: ExecuteCommandParams) =>
 {
 	if (params.command !== 'sample.fixMe' || params.arguments === undefined)
 	{
@@ -68,18 +84,20 @@ connection.onExecuteCommand(async (params) =>
 	}
 
 	const textDocument = documents.get(params.arguments[0]);
-	if (textDocument === undefined)
+	const newText = typeof params.arguments[2] === 'string' && params.arguments[2]
+
+	if (textDocument === undefined || !newText || !CodeActionDiagnostic)
 	{
 		return;
 	}
-	const newText = typeof params.arguments[1] === 'string' ? params.arguments[1] : 'Eclipse';
+
 	connection.workspace.applyEdit({
 		documentChanges: [
 			TextDocumentEdit.create({ uri: textDocument.uri, version: textDocument.version }, [
-				TextEdit.insert(Position.create(0, 0), newText)
+				TextEdit.replace(CodeActionDiagnostic.range, newText)
 			])
 		]
-	});
+	}).then(() => CodeActionDiagnostic = null)
 });
 
 connection.listen();
