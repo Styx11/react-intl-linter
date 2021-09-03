@@ -2,9 +2,10 @@
 
 import * as path from 'path';
 import { ExtensionContext, window as Window } from 'vscode';
-import { LanguageClient, LanguageClientOptions, RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { ExecuteCommandSignature, LanguageClient, LanguageClientOptions, RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
-import { getDocumentSelector } from './lib/util';
+import { CUSTOM_INPUT_CONTENT, CUSTOM_PICK_OPTION, CUSTOM_PICK_PLACEHOLDER } from './lib/constant'
+import { getDocumentSelector, getTranslateResultsWithProgress } from './lib/util';
 
 let client: LanguageClient;
 
@@ -27,15 +28,34 @@ export function activate(context: ExtensionContext): void
 		progressOnInitialization: true,
 		middleware: {
 			// 样例中间件
-			executeCommand: async (command, args, next) =>
+			executeCommand: async (command: string, args: any[], next: ExecuteCommandSignature) =>
 			{
-				const selected = await Window.showQuickPick(['Visual Studio', 'Visual Studio Code']);
-				if (selected === undefined)
+				const searchText = args[1] as string
+
+				// 翻译结果相关进度条
+				const translateResults = await getTranslateResultsWithProgress(searchText)
+
+				// picker 选择结果
+				const selected = await Window.showQuickPick(translateResults, { placeHolder: CUSTOM_PICK_PLACEHOLDER });
+
+				if (selected === undefined) return
+
+				// 选择自定义国际化内容（不是自定义翻译结果）
+				else if (selected === CUSTOM_PICK_OPTION)
 				{
-					return next(command, args);
+					const inputBoxContent = await Window.showInputBox({
+						value: CUSTOM_INPUT_CONTENT,
+						placeHolder: CUSTOM_PICK_PLACEHOLDER,
+					})
+					if (!inputBoxContent) return
+
+					args = [...args, inputBoxContent]
 				}
-				args = args.slice(0);
-				args.push(selected);
+				else
+				{
+					args = [...args, selected]
+				}
+
 				return next(command, args);
 			}
 		}
