@@ -1,5 +1,6 @@
 {
 	"name": "react-intl-linter",
+	"publisher": "styx11<1654630248@qq.com>",
 	"version": "0.0.1",
 	"description": "vscode linter extension for react-intl",
 	"repository": "git@github.com:Styx11/react-intl-linter.git",
@@ -19,6 +20,9 @@
 		"onLanguage:html",
 		"onLanguage:vue"
 	],
+	"capabilities" : {
+        "codeActionProvider" : true
+    },
 	"main": "./client/out/extension",
 	"scripts": {
 		"vscode:prepublish": "npm run webpack",

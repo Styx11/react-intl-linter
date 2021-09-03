@@ -1,7 +1,11 @@
-UPPERCASE ERROR
+自定义EclipseEclipseEclipseUPPERCASE ERROR
 
 '一个文本'
 
-"这是另一个文本"
+"这是另一个文本"这段文本紧贴字符串，并且不会触发 Code Action
 
 "It's not me"
+
+你好你好你好
+
+"你好你好吗你"
