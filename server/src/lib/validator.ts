@@ -2,7 +2,7 @@ import { TextDocument } from "vscode-languageserver-textdocument"
 import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver-types";
 import * as isChinese from 'is-chinese'
 
-import { StringReg } from "./util";
+import { StringReg, DiagnosticMessage } from "./util";
 
 export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 {
@@ -16,6 +16,9 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 
 	while ((match = StringReg.exec(text)))
 	{
+		// 匹配的全部字符串
+		const rawString = match[0]
+
 		// 单双引号之间的文本内容
 		const string = match[1] || match[2]
 
@@ -25,11 +28,12 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 		const diagnostic: Diagnostic = {
 			severity: DiagnosticSeverity.Warning,
 			range: {
-				start: textDocument.positionAt(match.index + 1),
-				end: textDocument.positionAt(match.index + string.length + 1)
+				start: textDocument.positionAt(match.index),
+				end: textDocument.positionAt(match.index + rawString.length)
 			},
-			message: `${string.trim()} is a Chinese sentence`,
+			message: `${string.trim()}${DiagnosticMessage}`,
 			source: 'react-intl-linter',
+
 		};
 		diagnostics.push(diagnostic);
 	}
