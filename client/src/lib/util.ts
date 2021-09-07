@@ -12,8 +12,13 @@ import
 	INVALID_CUSTOM_ID_MESSAGE
 } from './constant'
 
-// 获取用以区分相同翻译结果的 intl id 对应的数字
-// 例如 HELLO_01 和 HELLO_02
+/**
+ * 通过数字获取用以区分相同翻译结果的 intl id
+ * 例如 HELLO_01 和 HELLO_02
+ *
+ * @param {number} number
+ * @return {*}  {string}
+ */
 const getIntlIdCount = (number: number): string =>
 {
 	const numStr = number.toString()
@@ -21,7 +26,11 @@ const getIntlIdCount = (number: number): string =>
 	return numStr
 }
 
-// 获取 package.json 文件配置的激活事件 activationEvents 对应的语言
+/**
+* 获取 package.json 文件配置的激活事件 activationEvents 对应的语言
+*
+* @return {*}  {DocumentSelector} - 客户端支持的语言
+*/
 export const getDocumentSelector = (): DocumentSelector =>
 {
 	const languagePrefix = /onLanguage:/
@@ -34,7 +43,12 @@ export const getDocumentSelector = (): DocumentSelector =>
 	}, [])
 };
 
-// 获取文本翻译结果 - 通过 进度弹框 的形式
+/**
+* 获取文本翻译结果 - 通过 进度弹框 的形式
+*
+* @param {string} searchText
+* @return {*}  {Promise<string[]>}
+*/
 export const getTranslateResultsWithProgress = async (searchText: string): Promise<string[]> =>
 {
 	try
@@ -59,7 +73,14 @@ export const getTranslateResultsWithProgress = async (searchText: string): Promi
 	}
 }
 
-// 根据要搜索的中文文本获取已有的国际化配置内容，包括 id 和英文文本
+/**
+* 根据要搜索的中文文本获取已有的国际化配置内容，包括 id 和英文文本
+*
+* @param {string} searchText - 搜索的中文文本
+* @param {Record<string, string>} [zhConfig] - 中文国际化配置
+* @param {Record<string, string>} [enConfig] - 英文国际化配置
+* @return {*}  { intlId?: string; zhText?: string, enText?: string } - 返回可选的，已有的国际化 id、中文文本、英文文本
+*/
 export const getExistingIntl = (
 	searchText: string,
 	zhConfig?: Record<string, string>,
@@ -79,7 +100,13 @@ export const getExistingIntl = (
 	}
 }
 
-// 通过 pick 选择想要的 intl.formatMessage({ id: ... }) 的 id 文本
+/**
+ * 通过 pick 选择想要的 intl.formatMessage({ id: ... }) 的 id 文本
+ *
+ * @param {string[]} translateResults - 翻译结果数组
+ * @param {Record<string, string>} [intlConfig] - 国际化配置（传中文国际化配置即可）
+ * @return {*}  {(Promise<[string | undefined, string | undefined]>)}
+ */
 export const getIntlIdWithQuickPick = async (
 	translateResults: string[],
 	intlConfig?: Record<string, string>,
@@ -104,7 +131,16 @@ export const getIntlIdWithQuickPick = async (
 	return [intlId, translateResults && translateResults[0]]
 }
 
-// 将选择后的国际化代码附加到 onExecuteCommand 参数中返回
+/**
+ * 将选择后的国际化代码附加到 onExecuteCommand 参数中返回
+ *
+ * @param {any[]} args - executeCommand 参数
+ * @param {string} [selectedIntlId] - 选择的国际化 id
+ * @return {*}  {(Promise<{
+ * 	newArgs?: any[] | undefined;
+ * 	customIntlId?: string;
+ * }>)} - 处理后的新的参数和可选的自定义 id
+ */
 export const processArgsWithSelectResult = async (
 	args: any[],
 	selectedIntlId?: string

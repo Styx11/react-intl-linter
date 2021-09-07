@@ -11,7 +11,12 @@ export const ContentChangeDelay = 700
 // CodeAction 延迟显示时间 ms
 export const CodeActionDelay = 260
 
-// 获取 CodeAction 信息
+/**
+ * 获取 CodeAction 信息，包含引号之间的中文文本
+ *
+ * @param {string} message
+ * @return {*}  {[string, string]} - 【codeAction 信息，引号之间的中文文本】
+ */
 export const getCodeActionMessage = (message: string): [string, string] =>
 {
 	const rawMessage = message.replace(DiagnosticMessage, '')

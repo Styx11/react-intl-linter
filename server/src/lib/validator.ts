@@ -4,6 +4,12 @@ import * as isChinese from 'is-chinese'
 
 import { StringReg, DiagnosticMessage } from "./util";
 
+/**
+ * 在服务端校验文本，所有字符串内的中文文本会作为错误传出
+ *
+ * @param {TextDocument} textDocument - 文本映射对象
+ * @return {*}  {Diagnostic[]} - 错误信息数组，需要传回给客户端
+ */
 export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 {
 	// 校验器会检查所有的大写单词是否超过 2 个字母

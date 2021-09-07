@@ -5,9 +5,14 @@ import { ProgressLocation, Uri, window as Window, workspace } from "vscode";
 
 import { JSON_SPACE } from "./constant";
 
-// 初始化工作区国际化配置文件
-// 判断依据仅仅是，工作区 src 路径下是否有 intl 配置文件夹
-// todo 之后可能需要优化
+/**
+* 初始化工作区国际化配置文件
+* 判断依据仅仅是，工作区 src 路径下是否有 intl 配置文件夹
+* todo 之后可能需要优化
+*
+* @param {string} intlTempPath - 国际化配置模版路径
+* @param {Uri} [workspaceIntlConfigPath] - 工作区国际化文件路径
+*/
 export const initializeWorkplaceIntlConfig = async (intlTempPath: string, workspaceIntlConfigPath?: Uri) =>
 {
 	if (!workspaceIntlConfigPath) return
@@ -26,7 +31,12 @@ export const initializeWorkplaceIntlConfig = async (intlTempPath: string, worksp
 	}
 }
 
-// 获取国际化 json 配置文件
+/**
+* 获取工作区已有的国际化 json 配置文件
+*
+* @param {Uri} [workspaceIntlConfigPath] - 工作区国际化文件路径
+* @return {*}  Promise<[Record<string, string> | undefined, Record<string, string> | undefined]> - 可选的已有配置信息，【中文配置，英文配置】
+*/
 export const getIntlConfig = async (
 	workspaceIntlConfigPath?: Uri
 ): Promise<[Record<string, string> | undefined, Record<string, string> | undefined]> =>
@@ -52,8 +62,17 @@ export const getIntlConfig = async (
 	return [zhConfig, enConfig]
 }
 
-// 将翻译内容写入现有工作区的国际化配置中
-// 将 keys 排序后返回新的配置对象
+/**
+ * 将翻译内容写入现有工作区的国际化配置中
+ * 将 keys 排序后返回新的配置对象
+ *
+ * @param {string} intlId - 国际化 id
+ * @param {string} zhText - 中文文本
+ * @param {string} enText - 英文文本
+ * @param {Record<string, string>} [zhConfig] - 已有的国际化中文配置
+ * @param {Record<string, string>} [enConfig] - 已有的国际化英文配置
+ * @return {*} Promise<[Record<string, string>, Record<string, string>]> - 返回更新且排序后的国际化配置文件，【中文配置，英文配置】
+ */
 export const writeResultIntoIntlConfig = async (
 	intlId: string,
 	zhText: string,
@@ -96,7 +115,14 @@ export const writeResultIntoIntlConfig = async (
 	return Promise.all([resolveZhConfig, resolveEnConfig])
 }
 
-// 将新的国际化配置对象写入工作区
+/**
+ * 将新的国际化配置对象写入工作区
+ *
+ * @param {Record<string, string>} zhConfig - 新的国际化中文配置
+ * @param {Record<string, string>} enConfig - 新的国际化英文配置
+ * @param {Uri} [workspaceIntlConfigPath]   - 工作区国际化配置文件路径
+ * @return {*}
+ */
 export const writeConfigIntoWorkSpace = async (zhConfig: Record<string, string>, enConfig: Record<string, string>, workspaceIntlConfigPath?: Uri) =>
 {
 	if (!workspaceIntlConfigPath) return
