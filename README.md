@@ -1,12 +1,20 @@
-# LSP UI Example
+<div style="width: 100%; height: 300px; display: flex; justify-content: center; align-items: center; margin: 32px 0; background: RGBA(249, 249, 249, 1.00);">
+	<img src="./icon.png"/>
+</div>
 
-Sample to demonstrate UI support for code actions in LSP
+<h1 style="text-align: center;">react-intl-linter💡</h1>
 
-## Functionality
+<p style="text-align: center;">自动替换中文字符串为 react-intl 代码的 VS Code 插件</p>
 
-This Language Server works for plain text file. It has the following language features:
-- Diagnostics
-- Code Actions with UI
+
+## 功能
+
+这个插件可以自动检测打开的文件中的包裹在单/双引号之间的**中文文本**，并提供用户一个提示，用户可以点击提示进行中文文本翻译并选择写入的 intl 内容，插件会自动更新配置文件
+- 中文字符串提示
+- 自动检测已有国际化配置是否已包含目标文本
+- 翻译目标文本至英文，用户可以选择或自定义 intl id 内容
+- 替换中文字符串为`intl.formatMessage({ id: ... })`
+
 
 ## Structure
 
@@ -21,7 +29,7 @@ This Language Server works for plain text file. It has the following language fe
         └── server.ts // Language Server entry point
 ```
 
-## Running the Sample
+## Debug
 
 - Run `npm install` in this folder. This installs all necessary npm modules in both the client and server folder
 - Open VS Code on this folder.
@@ -32,3 +40,6 @@ This Language Server works for plain text file. It has the following language fe
 - If you want to debug the server as well use the launch configuration `Attach to Server`
 - In the [Extension Development Host] instance of VSCode, open a document in 'plain text' language mode.
   - Activate code action on the error on the first line.
+
+## License
+Apache License 2.0

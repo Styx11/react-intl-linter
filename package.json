@@ -11,6 +11,7 @@
 	"engines": {
 		"vscode": "^1.43.0"
 	},
+	"icon": "./icon.png",
 	"activationEvents": [
 		"onLanguage:plaintext",
 		"onLanguage:typescript",
