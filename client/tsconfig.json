@@ -6,7 +6,9 @@
 		"outDir": "out",
 		"rootDir": "src",
 		"lib": [ "es2017" ],
-		"sourceMap": true
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
 	},
 	"include": [
 		"src"
