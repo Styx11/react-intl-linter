@@ -1,10 +1,10 @@
-<div style="width: 100%; height: 300px; display: flex; justify-content: center; align-items: center; margin: 32px 0; background: RGBA(249, 249, 249, 1.00);">
-	<img src="./icon.png"/>
+<div align="center">
+
+![](./icon.png)
+# react-intl-linter💡
+自动替换中文字符串为 react-intl 代码的 VS Code 插件
+
 </div>
-
-<h1 style="text-align: center;">react-intl-linter💡</h1>
-
-<p style="text-align: center;">自动替换中文字符串为 react-intl 代码的 VS Code 插件</p>
 
 
 ## 功能
