@@ -1,5 +1,6 @@
 import { window as Window, ProgressLocation } from 'vscode'
 import { DocumentSelector } from 'vscode-languageclient'
+import { getZhTranslation } from './baidu'
 
 import
 {
@@ -9,7 +10,9 @@ import
 	CUSTOM_PICK_OPTION,
 	CUSTOM_PICK_PLACEHOLDER,
 	getIntlMessage,
-	INVALID_CUSTOM_ID_MESSAGE
+	INVALID_CUSTOM_ID_MESSAGE,
+	INVALID_INTL_ID_CHARACTER,
+	TranslationResultMap
 } from './constant'
 
 /**
@@ -24,6 +27,17 @@ const getIntlIdCount = (number: number): string =>
 	const numStr = number.toString()
 	if (numStr.length === 1) return `0${number}`
 	return numStr
+}
+
+/**
+ * 去掉翻译结果中的特殊字符串，只保留英文字母和空格作为 intl id
+ *
+ * @param {string} translationResult - 翻译结果
+ * @return {*}  {string}
+ */
+export const getCleanIntlId = (translationResult: string): string =>
+{
+	return translationResult.replace(INVALID_INTL_ID_CHARACTER, '')
 }
 
 /**
@@ -51,6 +65,10 @@ export const getDocumentSelector = (): DocumentSelector =>
 */
 export const getTranslateResultsWithProgress = async (searchText: string): Promise<string[]> =>
 {
+	// 是否有缓存
+	const cacheResult = TranslationResultMap.get(searchText)
+	if (Array.isArray(cacheResult)) return cacheResult
+
 	try
 	{
 		return await Window.withProgress({
@@ -61,9 +79,9 @@ export const getTranslateResultsWithProgress = async (searchText: string): Promi
 		{
 			// 获取供选择的 Options
 			// 这是最终的返回结果
-			return await new Promise<string[]>((resolve) =>
-				setTimeout(() => resolve(['Visual Studio', 'Visual Studio Code']), 1500)
-			)
+			const result = await getZhTranslation(searchText)
+			Array.isArray(result) && result.length && TranslationResultMap.set(searchText, result)
+			return result
 		})
 	}
 	catch (e: any)
@@ -112,7 +130,7 @@ export const getIntlIdWithQuickPick = async (
 	intlConfig?: Record<string, string>,
 ): Promise<[string | undefined, string | undefined]> =>
 {
-	const _intlIdOptions = translateResults.map(tr => tr.toUpperCase().split(' ').join('_'))
+	const _intlIdOptions = translateResults.map(re => getCleanIntlId(re).toUpperCase().split(' ').join('_'))
 
 	let intlId = await Window.showQuickPick([..._intlIdOptions, CUSTOM_PICK_OPTION], { placeHolder: CUSTOM_PICK_PLACEHOLDER })
 

@@ -4,7 +4,7 @@ import * as path from 'path';
 import { ExtensionContext, window as Window, Uri, workspace } from 'vscode';
 import { ExecuteCommandSignature, LanguageClient, LanguageClientOptions, RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
-import { getIntlMessage } from './lib/constant';
+import { getIntlMessage, TranslationResultMap } from './lib/constant';
 import { getIntlConfig, initializeWorkplaceIntlConfig, writeConfigIntoWorkSpace, writeResultIntoIntlConfig } from './lib/file';
 import { getDocumentSelector, getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgress, processArgsWithSelectResult } from './lib/util';
 
@@ -13,7 +13,8 @@ let client: LanguageClient;
 export async function activate(context: ExtensionContext): Promise<void>
 {
 	// 指明语言服务器路径
-	const serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
+	// 因为我们只能将 client 目录下的文件作为 extension 发布，所以需要复制 server/out 下的文件至 client/out/server 下
+	const serverModule = context.asAbsolutePath(path.join('client', 'out', 'server', 'server.js'));
 
 	// 国际化配置模版路径
 	const intlConfigTemp = context.asAbsolutePath(path.join('client', 'src', 'lib', 'intl'))
@@ -115,6 +116,9 @@ export async function activate(context: ExtensionContext): Promise<void>
 
 export function deactivate(): Thenable<void> | undefined
 {
+	// 清除翻译缓存
+	TranslationResultMap.clear()
+
 	if (!client)
 	{
 		return undefined;
