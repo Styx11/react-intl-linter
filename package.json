@@ -1,7 +1,7 @@
 {
 	"name": "react-intl-linter",
-	"publisher": "styx11<1654630248@qq.com>",
 	"version": "0.0.1",
+	"publisher": "styx11",
 	"description": "vscode linter extension for react-intl",
 	"repository": "git@github.com:Styx11/react-intl-linter.git",
 	"author": "styx11 <1654630248@qq.com>",
@@ -9,11 +9,10 @@
 	"private": true,
 	"categories": [],
 	"engines": {
-		"vscode": "^1.43.0"
+		"vscode": "^1.52.0"
 	},
-	"icon": "./icon.png",
+	"icon": "react-intl-linter.icon.png",
 	"activationEvents": [
-		"onLanguage:plaintext",
 		"onLanguage:typescript",
 		"onLanguage:typescriptreact",
 		"onLanguage:javascriptreact",
@@ -24,10 +23,10 @@
 	"capabilities" : {
         "codeActionProvider" : true
     },
-	"main": "./client/out/extension",
+	"main": "client/out/extension",
 	"scripts": {
 		"vscode:prepublish": "yarn compile",
-		"compile": "rimraf server/out && rimraf client/out && tsc -b && cp -r server/out client/out/server && cp -r server/node_modules client/out/server/node_modules",
+		"compile": "rimraf server/out && rimraf client/out && tsc -b",
 		"watch": "tsc -b -w",
 		"lint": "npm run lint:client && npm run lint:server",
 		"lint:client": "eslint --config ./client/.eslintrc.json ./client/src/*.ts",

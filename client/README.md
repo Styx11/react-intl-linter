@@ -1,6 +1,5 @@
 <div align="center">
 
-![](https://s3.bmp.ovh/imgs/2021/09/c9214e94371f0e22.png)
 # react-intl-linter💡
 自动替换中文字符串为 react-intl 代码的 VS Code 插件
 

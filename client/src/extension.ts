@@ -14,7 +14,7 @@ export async function activate(context: ExtensionContext): Promise<void>
 {
 	// 指明语言服务器路径
 	// 因为我们只能将 client 目录下的文件作为 extension 发布，所以需要复制 server/out 下的文件至 client/out/server 下
-	const serverModule = context.asAbsolutePath(path.join('client', 'out', 'server', 'server.js'));
+	const serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
 
 	// 国际化配置模版路径
 	const intlConfigTemp = context.asAbsolutePath(path.join('client', 'src', 'lib', 'intl'))
