@@ -4,6 +4,8 @@ import * as isChinese from 'is-chinese'
 
 import { StringReg, DiagnosticMessage } from "./util";
 
+const MaxDiagnosticCount = 100
+
 /**
  * 在服务端校验文本，所有字符串内的中文文本会作为错误传出
  *
@@ -12,6 +14,9 @@ import { StringReg, DiagnosticMessage } from "./util";
  */
 export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 {
+	// 出于性能考虑，需对错误信息数量做限制
+	let limitDiagnosticCount = 0
+
 	// 校验器会检查所有的大写单词是否超过 2 个字母
 	const text = textDocument.getText();
 
@@ -20,7 +25,7 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 
 	const diagnostics: Diagnostic[] = [];
 
-	while ((match = StringReg.exec(text)))
+	while ((match = StringReg.exec(text)) && limitDiagnosticCount <= MaxDiagnosticCount)
 	{
 		// 匹配的全部字符串
 		const rawString = match[0]
@@ -29,6 +34,8 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 		const string = match[1] || match[2]
 
 		if (!isChinese(string)) continue
+
+		limitDiagnosticCount++
 
 		// 错误信息
 		const diagnostic: Diagnostic = {

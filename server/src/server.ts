@@ -28,7 +28,7 @@ connection.onInitialize(() =>
 				change: TextDocumentSyncKind.Incremental
 			},
 			executeCommandProvider: {
-				commands: ['sample.fixMe']
+				commands: ['react-intl-linter.extract']
 			}
 		}
 	};
@@ -71,14 +71,18 @@ connection.onCodeAction((params: CodeActionParams) =>
 
 	// 点击 CodeAction 后发出的指令会被 client middleware 捕获并处理
 	return [
-		CodeAction.create(codeActionMessage, Command.create(codeActionMessage, 'sample.fixMe', textDocument.uri, rawMessage), CodeActionKind.QuickFix)
+		CodeAction.create(
+			codeActionMessage,
+			Command.create(codeActionMessage, 'react-intl-linter.extract', textDocument.uri, rawMessage),
+			CodeActionKind.QuickFix,
+		)
 	];
 });
 
 // Code Action 指令经 client middleware 处理后执行
 connection.onExecuteCommand(async (params: ExecuteCommandParams) =>
 {
-	if (params.command !== 'sample.fixMe' || params.arguments === undefined)
+	if (params.command !== 'react-intl-linter.extract' || params.arguments === undefined)
 	{
 		return;
 	}
