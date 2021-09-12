@@ -37,7 +37,7 @@ const getIntlIdCount = (number: number): string =>
  */
 export const getCleanIntlId = (translationResult: string): string =>
 {
-	return translationResult.replace(INVALID_INTL_ID_CHARACTER, '')
+	return translationResult.replace(INVALID_INTL_ID_CHARACTER, '').trim()
 }
 
 /**

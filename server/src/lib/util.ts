@@ -1,6 +1,8 @@
 
 // 匹配单引号/双引号内的字符串文本
-export const StringReg = /'(.+)'|"(.+)"/gu
+// 单个字符 . 的匹配默认是贪婪的，所以当有多个带引号的句子在一行时，匹配结果就会是从第一个引号开始到最后一个引号结束，所以要用 [^'\n]+ 和 [^"\n]+ 去匹配
+// 例如 const message = `${'添加'}hellllllo${'添加'}` 会匹配为 添加'}hellllllo${'添加
+export const StringReg = /'([^'\n]+)'|"([^"\n]+)"/gu
 
 // 错误信息
 export const DiagnosticMessage = ' is a Chinese sentence'
