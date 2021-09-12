@@ -6,6 +6,18 @@ import { ProgressLocation, Uri, window as Window, workspace } from "vscode";
 import { JSON_SPACE } from "./constant";
 
 /**
+* 获取工作区下国际化配置文件 json 路径
+*
+* @param {Uri} workspaceIntlConfigPath 工作区根目录
+* @param {string} jsonPath 国际化的 json 路径
+* @return {*}  {Uri}
+*/
+export const getWorkspaceIntlJsonPath = (workspaceIntlConfigPath: Uri, jsonPath: string): Uri =>
+{
+	return Uri.joinPath(workspaceIntlConfigPath, path.join('/' + jsonPath))
+}
+
+/**
 * 初始化工作区国际化配置文件
 * 判断依据仅仅是，工作区 src 路径下是否有 intl 配置文件夹
 * todo 之后可能需要优化
@@ -17,17 +29,39 @@ export const initializeWorkplaceIntlConfig = async (intlTempPath: string, worksp
 {
 	if (!workspaceIntlConfigPath) return
 
+	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'zh_CN.json')
+	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'en_US.json')
+
+	// 初始化整个文件夹
 	try
 	{
 		await workspace.fs.stat(workspaceIntlConfigPath)
-		console.log('does workspace intl config exist')
 	}
 	catch (e)
 	{
-		console.log('nope, workspace intl config does not exist')
 
 		// 若拷贝失败，抛出错误
-		await workspace.fs.copy(Uri.file(intlTempPath), workspaceIntlConfigPath)
+		return await workspace.fs.copy(Uri.file(intlTempPath), workspaceIntlConfigPath)
+	}
+
+	// 初始化中文国际化配置
+	try
+	{
+		await workspace.fs.stat(zhPath)
+	}
+	catch (e)
+	{
+		await workspace.fs.copy(Uri.file(path.join(intlTempPath, '/zh_CN.json')), zhPath)
+	}
+
+	//初始化英文国际化配置
+	try
+	{
+		await workspace.fs.stat(enPath)
+	}
+	catch (e)
+	{
+		await workspace.fs.copy(Uri.file(path.join(intlTempPath, '/en_US.json')), enPath)
 	}
 }
 
@@ -44,8 +78,8 @@ export const getIntlConfig = async (
 	if (!workspaceIntlConfigPath) return [undefined, undefined]
 
 	// 工作区国际化配置文件路径
-	const zhPath = Uri.joinPath(workspaceIntlConfigPath, path.join('/zh_CN.json'))
-	const enPath = Uri.joinPath(workspaceIntlConfigPath, path.join('/en_US.json'))
+	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'zh_CN.json')
+	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'en_US.json')
 
 	// 获取工作区国际化配置文件内容
 	const [rawZHConfig, rawENConfig] = await Promise.all([
@@ -128,8 +162,8 @@ export const writeConfigIntoWorkSpace = async (zhConfig: Record<string, string>,
 	if (!workspaceIntlConfigPath) return
 
 	// 工作区国际化配置文件路径
-	const zhPath = Uri.joinPath(workspaceIntlConfigPath, path.join('/zh_CN.json'))
-	const enPath = Uri.joinPath(workspaceIntlConfigPath, path.join('/en_US.json'))
+	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'zh_CN.json')
+	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'en_US.json')
 
 	return await Window.withProgress({
 		cancellable: false,
