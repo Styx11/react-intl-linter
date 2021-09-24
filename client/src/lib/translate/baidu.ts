@@ -2,6 +2,7 @@ import { URLSearchParams } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import md5 from 'blueimp-md5';
 import axios from 'axios';
+import { capitalize } from './util';
 
 export interface BaiduResponse
 {
@@ -58,7 +59,7 @@ export const getBaiduSource = (query: string, isChinese?: boolean): string =>
  * @param {string} query - 将要翻译的中文文本
  * @return {*}  {Promise<string[]>} - 翻译结果数组
  */
-export const getZhTranslation = async (query: string): Promise<string[]> =>
+export const getBaiduZhTranslation = async (query: string): Promise<string[]> =>
 {
 	if (!query) return []
 
@@ -75,5 +76,5 @@ export const getZhTranslation = async (query: string): Promise<string[]> =>
 
 	console.log('translationResult', result)
 
-	return trans_result.map(r => r.dst)
+	return trans_result.map(r => capitalize(r.dst))
 }
