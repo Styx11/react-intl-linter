@@ -9,6 +9,12 @@ export const ActivationLanguage = [
 	"onLanguage:vue"
 ]
 
+// 从语言服务器发出的要执行的插件命令
+export enum LinterCommands
+{
+	Extract = 'react-intl-linter.extract',    // 抽取中文字符串为 react-intl 代码
+}
+
 // 翻译结果 Map 缓存，将在 deactive 的时候清除
 export const TranslationResultMap = new Map<string, string[]>()
 
