@@ -28,14 +28,17 @@ export const JSON_SPACE = 4
 // 自定义国际化内容选项
 export const CUSTOM_PICK_OPTION = '自定义'
 
+// 自定义 pick option 描述信息
+export const CUSTOM_PICK_OPTION_DESC = '自定义 id，这会默认选择第一个翻译结果'
+
 // 选择国际化文本 placeholder
-export const CUSTOM_PICK_PLACEHOLDER = '请选择用来替换的国际化文本 id 内容'
+export const CUSTOM_PICK_PLACEHOLDER = '请选择用来替换的国际化代码 id 内容'
 
 // 自定义国际化输入框 placeholder
-export const CUSTOM_INPUT_PLACEHOLDER = '请输入自定义的国际化 id 内容'
+export const CUSTOM_INPUT_PLACEHOLDER = '请输入自定义的国际化代码 id 内容'
 
 // 自定义 intl id 校验失败信息
-export const INVALID_CUSTOM_ID_MESSAGE = '国际化 id 只能由大写字符或下划线组成'
+export const INVALID_CUSTOM_ID_MESSAGE = '国际化代码 id 只能由大写字符或下划线组成'
 
 // intl id 中的非法字符
 export const INVALID_INTL_ID_CHARACTER = /[^A-Za-z\s]/ig

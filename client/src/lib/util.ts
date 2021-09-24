@@ -1,6 +1,6 @@
-import { window as Window, ProgressLocation } from 'vscode'
+import { window as Window, ProgressLocation, QuickPickItem } from 'vscode'
 import { DocumentSelector } from 'vscode-languageclient'
-import { getZhTranslation } from './baidu'
+import { getBaiduZhTranslation } from './translate/baidu'
 
 import
 {
@@ -8,6 +8,7 @@ import
 	CUSTOM_INPUT_PLACEHOLDER,
 	CUSTOM_INTL_ID_REGX,
 	CUSTOM_PICK_OPTION,
+	CUSTOM_PICK_OPTION_DESC,
 	CUSTOM_PICK_PLACEHOLDER,
 	getIntlMessage,
 	INVALID_CUSTOM_ID_MESSAGE,
@@ -79,7 +80,7 @@ export const getTranslateResultsWithProgress = async (searchText: string): Promi
 		{
 			// 获取供选择的 Options
 			// 这是最终的返回结果
-			const result = await getZhTranslation(searchText)
+			const result = await getBaiduZhTranslation(searchText)
 			Array.isArray(result) && result.length && TranslationResultMap.set(searchText, result)
 			return result
 		})
@@ -130,9 +131,35 @@ export const getIntlIdWithQuickPick = async (
 	intlConfig?: Record<string, string>,
 ): Promise<[string | undefined, string | undefined]> =>
 {
-	const _intlIdOptions = translateResults.map(re => getCleanIntlId(re).toUpperCase().split(' ').join('_'))
+	// intl id 对应 translation result 的 map
+	// intlId -> translateResult
+	const intlResultMap = new Map<string, string>()
 
-	let intlId = await Window.showQuickPick([..._intlIdOptions, CUSTOM_PICK_OPTION], { placeHolder: CUSTOM_PICK_PLACEHOLDER })
+	// 包含描述信息和细节的 quick pick
+	// 参考 https://stackoverflow.com/questions/62312943/vscode-use-quickpick-list-items-with-description
+	const quickPickOptions: QuickPickItem[] = translateResults.map(re =>
+	{
+		const intlId = getCleanIntlId(re).toUpperCase().split(' ').join('_')
+		intlResultMap.set(intlId, re)
+		return {
+			label: intlId,
+			detail: `对应翻译结果：${intlResultMap.get(intlId) || '无'}`
+		}
+	})
+
+	// 自定义选项
+	const customPickOption: QuickPickItem = { label: CUSTOM_PICK_OPTION, description: CUSTOM_PICK_OPTION_DESC }
+
+	const pickedIntlOption = await Window.showQuickPick([...quickPickOptions, customPickOption], { placeHolder: CUSTOM_PICK_PLACEHOLDER })
+
+	// 选中的 option 对应的 intl id
+	let intlId = pickedIntlOption?.label
+
+	// 自定义 id 会选择第一个翻译结果
+	// 否则取 intlId 对应的翻译结果
+	const translateResult = !!intlId
+		? (intlId !== CUSTOM_PICK_OPTION && intlResultMap.get(intlId)) ? intlResultMap.get(intlId) : translateResults && translateResults[0]
+		: undefined
 
 	// 用户选择的 id 有可能已存在，我们会给它加上数字用以区分
 	if (intlConfig && intlId && (intlId in intlConfig) && intlId !== CUSTOM_PICK_OPTION)
@@ -145,8 +172,7 @@ export const getIntlIdWithQuickPick = async (
 		intlId = `${intlId}_${getIntlIdCount(idCount)}`
 	}
 
-	// 具体的英文翻译文本 doesn't matter
-	return [intlId, translateResults && translateResults[0]]
+	return [intlId, translateResult]
 }
 
 /**
