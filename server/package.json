@@ -1,6 +1,6 @@
 {
 	"name": "server",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "vscode linter extension for react-intl",
 	"repository": "git@github.com:Styx11/react-intl-linter.git",
 	"author": "styx11 <1654630248@qq.com>",
