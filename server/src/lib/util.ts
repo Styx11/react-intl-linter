@@ -5,7 +5,7 @@
 export const StringRegx = /'([^'\n]+)'|"([^"\n]+)"/gu
 
 // 标识特殊字符串前缀，表示含有特殊字符需要 react-intl-linter 识别  'react-intl=你好，{name: 约翰}' 或  '$=你好，{name: 约翰}'
-export const SpecialStringRegx = /^(?:react-intl|\$)=([^"\n']+)/u
+export const SpecialStringRegx = /^(?:react-intl|\$)=([^\n]+)/u
 
 // 特殊字符串里面的非法参数，若有一个非法参数则不抛出 codeAction
 export const inValidParamsRegx = /\{\s*([A-Za-z_]+):\s*\}/u

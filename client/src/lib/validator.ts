@@ -78,8 +78,8 @@ export const specialStringParams2String = (params: SpecialStringParams[]): strin
 	}, {})
 
 	const targetStr = Object.keys(sourceObj)
-		.map(key => `${key}: '${sourceObj[key]}'`)
+		.map(key => `${key}: ${sourceObj[key]}`)
 		.join(', ')
 
-	return `{${targetStr}}`
+	return `{ ${targetStr} }`
 }
