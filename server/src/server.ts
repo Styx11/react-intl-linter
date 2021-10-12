@@ -39,7 +39,7 @@ documents.onDidOpen((event: TextDocumentChangeEvent<TextDocument>) =>
 {
 	const document = event.document
 	const diagnostics = validateMessage(document)
-	diagnostics.length && connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
+	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
 });
 
 // 当文件内容改变时
@@ -47,7 +47,7 @@ documents.onDidChangeContent(debounce((event: TextDocumentChangeEvent<TextDocume
 {
 	const document = event.document
 	const diagnostics = validateMessage(document)
-	diagnostics.length && connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
+	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
 }, ContentChangeDelay));
 
 // 正在 Code Action 中处理的错误
