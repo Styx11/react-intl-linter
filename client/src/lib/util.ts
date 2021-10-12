@@ -10,11 +10,11 @@ import
 	CUSTOM_PICK_OPTION,
 	CUSTOM_PICK_OPTION_DESC,
 	CUSTOM_PICK_PLACEHOLDER,
-	getIntlMessage,
 	INVALID_CUSTOM_ID_MESSAGE,
 	INVALID_INTL_ID_CHARACTER,
 	TranslationResultMap
 } from './constant'
+import { SpecialStringParams, specialStringParams2String } from './validator'
 
 /**
  * 通过数字获取用以区分相同翻译结果的 intl id
@@ -38,7 +38,26 @@ const getIntlIdCount = (number: number): string =>
  */
 export const getCleanIntlId = (translationResult: string): string =>
 {
-	return translationResult.replace(INVALID_INTL_ID_CHARACTER, '').trim()
+	return translationResult
+		.replace(INVALID_INTL_ID_CHARACTER, '')
+		.toUpperCase()
+		.replace(/\s+/g, '_')
+}
+
+/**
+ * 获取 react-intl 代码
+ *
+ * @param {string} intlId
+ * @param {SpecialStringParams[]} [params] 特殊字符串参数
+ * @return {*}
+ */
+export const getIntlMessage = (intlId: string, params?: SpecialStringParams[]) =>
+{
+	if (Array.isArray(params) && params.length)
+	{
+		return `intl.formatMessage({ id: '${intlId}' }, ${specialStringParams2String(params)})`
+	}
+	return `intl.formatMessage({ id: '${intlId}' })`
 }
 
 /**
@@ -139,7 +158,7 @@ export const getIntlIdWithQuickPick = async (
 	// 参考 https://stackoverflow.com/questions/62312943/vscode-use-quickpick-list-items-with-description
 	const quickPickOptions: QuickPickItem[] = translateResults.map(re =>
 	{
-		const intlId = getCleanIntlId(re).toUpperCase().split(' ').join('_')
+		const intlId = getCleanIntlId(re)
 		intlResultMap.set(intlId, re)
 		return {
 			label: intlId,
@@ -180,6 +199,7 @@ export const getIntlIdWithQuickPick = async (
  *
  * @param {any[]} args - executeCommand 参数
  * @param {string} [selectedIntlId] - 选择的国际化 id
+ * @param {SpecialStringParams[]} [specialStringParams] - 若该字符为包含参数的特殊字符，这个参数表示参数数组
  * @return {*}  {(Promise<{
  * 	newArgs?: any[] | undefined;
  * 	customIntlId?: string;
@@ -187,7 +207,8 @@ export const getIntlIdWithQuickPick = async (
  */
 export const processArgsWithSelectResult = async (
 	args: any[],
-	selectedIntlId?: string
+	selectedIntlId?: string,
+	specialStringParams?: SpecialStringParams[],
 ): Promise<{
 	newArgs?: any[] | undefined;
 	customIntlId?: string;
@@ -208,13 +229,13 @@ export const processArgsWithSelectResult = async (
 				if (!inputBoxContent) return {}
 
 				return {
-					newArgs: [...args, getIntlMessage(inputBoxContent)],
+					newArgs: [...args, getIntlMessage(inputBoxContent, specialStringParams)],
 					customIntlId: inputBoxContent
 				}
 			}
 		default:
 			return {
-				newArgs: [...args, getIntlMessage(selectedIntlId)],
+				newArgs: [...args, getIntlMessage(selectedIntlId, specialStringParams)],
 			}
 	}
 }

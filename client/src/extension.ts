@@ -42,12 +42,19 @@ export async function activate(context: ExtensionContext): Promise<void>
 			// 执行从语言服务器发送的要执行的命令
 			executeCommand: async (command: string, args: any[], next: ExecuteCommandSignature) =>
 			{
-				switch (command)
+				try
 				{
-					case LinterCommands.Extract:
-						return await ExtractMiddleware(intlConfigTemp, workspaceIntlConfigPath, args, next)
-					default:
-						return
+					switch (command)
+					{
+						case LinterCommands.Extract:
+							return await ExtractMiddleware(intlConfigTemp, workspaceIntlConfigPath, args, next)
+						default:
+							return
+					}
+				}
+				catch (e)
+				{
+					Window.showErrorMessage(`抽取文本发生错误 ${e}`);
 				}
 
 			}

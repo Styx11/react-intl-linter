@@ -1,9 +1,10 @@
 import { Uri, window as Window } from 'vscode'
 import { ExecuteCommandSignature } from "vscode-languageclient"
 
-import { getIntlMessage, LinterCommands } from "../lib/constant"
+import { LinterCommands } from "../lib/constant"
 import { getIntlConfig, initializeWorkplaceIntlConfig, writeConfigIntoWorkSpace, writeResultIntoIntlConfig } from "../lib/file"
-import { getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgress, processArgsWithSelectResult } from "../lib/util"
+import { getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgress, processArgsWithSelectResult, getIntlMessage } from "../lib/util"
+import { validateSpecialString } from '../lib/validator'
 
 /**
  * 命令中间件 - 执行语言服务器发出的抽取中文文本为 react-intl 代码命令
@@ -16,8 +17,12 @@ import { getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgres
  */
 const ExtractMiddleware = async (intlConfigTemp: string, workspaceIntlConfigPath: Uri | undefined, args: any[], next: ExecuteCommandSignature) =>
 {
+	const rawText = args[1] as string
+
+	if (!rawText) return
+
 	// 想要替换的中文文本
-	const searchText = args[1] as string
+	const [searchText, specialStringParams] = validateSpecialString(rawText)
 
 	// 初始化工作区国际化配置文件
 	await initializeWorkplaceIntlConfig(intlConfigTemp, workspaceIntlConfigPath)
@@ -32,7 +37,7 @@ const ExtractMiddleware = async (intlConfigTemp: string, workspaceIntlConfigPath
 	if (intlId && zhText && enText)
 	{
 		// 传给语言服务器的 onExecuteCommand 函数
-		return next(LinterCommands.Extract, [...args, getIntlMessage(intlId)])
+		return next(LinterCommands.Extract, [...args, getIntlMessage(intlId, specialStringParams)])
 	}
 
 	// 翻译结果相关进度条
@@ -42,7 +47,7 @@ const ExtractMiddleware = async (intlConfigTemp: string, workspaceIntlConfigPath
 	const [selectedIntlId, translationText] = await getIntlIdWithQuickPick(translateResults, zhConfig);
 
 	// 获得处理后的参数，用于传给语言服务器的 onExecuteCommand 函数
-	const { newArgs, customIntlId } = await processArgsWithSelectResult(args, selectedIntlId)
+	const { newArgs, customIntlId } = await processArgsWithSelectResult(args, selectedIntlId, specialStringParams)
 
 	if (!newArgs || !selectedIntlId || !translationText) return
 

@@ -18,9 +18,7 @@ export enum LinterCommands
 // 翻译结果 Map 缓存，将在 deactive 的时候清除
 export const TranslationResultMap = new Map<string, string[]>()
 
-export const getIntlMessage = (intlId: string) => `intl.formatMessage({ id: '${intlId}' })`
-
-export const CUSTOM_INTL_ID_REGX = /[A-Z_]+/g
+export const CUSTOM_INTL_ID_REGX = /[A-Z_]+/
 
 // json 文件的缩进数
 export const JSON_SPACE = 4
