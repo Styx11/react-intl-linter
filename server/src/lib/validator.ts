@@ -2,7 +2,7 @@ import { TextDocument } from "vscode-languageserver-textdocument"
 import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver-types";
 import * as isChinese from 'is-chinese'
 
-import { StringReg, DiagnosticMessage } from "./util";
+import { StringRegx, DiagnosticMessage, SpecialStringRegx, inValidParamsRegx, ExtensionSource } from "./util";
 
 const MaxDiagnosticCount = 100
 
@@ -25,7 +25,7 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 
 	const diagnostics: Diagnostic[] = [];
 
-	while ((match = StringReg.exec(text)) && limitDiagnosticCount <= MaxDiagnosticCount)
+	while ((match = StringRegx.exec(text)) && limitDiagnosticCount <= MaxDiagnosticCount)
 	{
 		// 匹配的全部字符串
 		const rawString = match[0]
@@ -33,9 +33,16 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 		// 单双引号之间的文本内容
 		const string = match[1] || match[2]
 
-		if (!isChinese(string)) continue
+		// 以 react-intl= 或 $= 开头的特殊字符串匹配
+		const specialStringMatch = SpecialStringRegx.exec(string)
+		const invalidParams = specialStringMatch ? !!inValidParamsRegx.exec(specialStringMatch[1].trim()) : false
+
+		if (!isChinese(string) && (!specialStringMatch || invalidParams)) continue
 
 		limitDiagnosticCount++
+
+		// 特殊字符串内容，如：'react-intl=你好，{name: Fred 哥}' 中的 '你好，{name: Fred 哥}'
+		const specialString = specialStringMatch ? specialStringMatch[1].trim() : undefined
 
 		// 错误信息
 		const diagnostic: Diagnostic = {
@@ -44,8 +51,8 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 				start: textDocument.positionAt(match.index),
 				end: textDocument.positionAt(match.index + rawString.length)
 			},
-			message: `${string.trim()}${DiagnosticMessage}`,
-			source: 'react-intl-linter',
+			message: `${specialString || string.trim()}${DiagnosticMessage}`,
+			source: ExtensionSource,
 
 		};
 		diagnostics.push(diagnostic);
@@ -53,3 +60,4 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 
 	return diagnostics
 }
+
