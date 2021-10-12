@@ -8,7 +8,7 @@ import
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { validateMessage } from './lib/validator';
-import { getCodeActionMessage, debounce, ContentChangeDelay } from './lib/util';
+import { getCodeActionMessage, debounce, ContentChangeDelay, ExtensionSource, LinterCommands } from './lib/util';
 
 const connection = createConnection(ProposedFeatures.all);
 connection.console.info(`Sample server running in node ${process.version}`);
@@ -28,7 +28,7 @@ connection.onInitialize(() =>
 				change: TextDocumentSyncKind.Incremental
 			},
 			executeCommandProvider: {
-				commands: ['react-intl-linter.extract']
+				commands: [LinterCommands.Extract]
 			}
 		}
 	};
@@ -39,7 +39,7 @@ documents.onDidOpen((event: TextDocumentChangeEvent<TextDocument>) =>
 {
 	const document = event.document
 	const diagnostics = validateMessage(document)
-	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
+	diagnostics.length && connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
 });
 
 // 当文件内容改变时
@@ -47,7 +47,7 @@ documents.onDidChangeContent(debounce((event: TextDocumentChangeEvent<TextDocume
 {
 	const document = event.document
 	const diagnostics = validateMessage(document)
-	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
+	diagnostics.length && connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
 }, ContentChangeDelay));
 
 // 正在 Code Action 中处理的错误
@@ -69,11 +69,14 @@ connection.onCodeAction((params: CodeActionParams) =>
 	// 用于 CodeAction 的文本和原始引号之间的文本
 	const [codeActionMessage, rawMessage] = getCodeActionMessage(diagnostic.message);
 
+	// 过滤其他插件发出的错误信息
+	if (!diagnostic || !rawMessage || diagnostic.source !== ExtensionSource) return
+
 	// 点击 CodeAction 后发出的指令会被 client middleware 捕获并处理
 	return [
 		CodeAction.create(
 			codeActionMessage,
-			Command.create(codeActionMessage, 'react-intl-linter.extract', textDocument.uri, rawMessage),
+			Command.create(codeActionMessage, LinterCommands.Extract, textDocument.uri, rawMessage),
 			CodeActionKind.QuickFix,
 		)
 	];
@@ -82,7 +85,7 @@ connection.onCodeAction((params: CodeActionParams) =>
 // Code Action 指令经 client middleware 处理后执行
 connection.onExecuteCommand(async (params: ExecuteCommandParams) =>
 {
-	if (params.command !== 'react-intl-linter.extract' || params.arguments === undefined)
+	if (params.command !== LinterCommands.Extract || params.arguments === undefined)
 	{
 		return;
 	}
