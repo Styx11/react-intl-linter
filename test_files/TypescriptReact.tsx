@@ -16,6 +16,9 @@
 
 '添加'
 
+// https://github.com/Styx11/react-intl-linter/issues/7
+const validMessage = true ? '' : '你好'; const followMessage = true ? '你好' : ''
+
 const message = `${"添加"}hellllllo${"添加"}`
 
 const testMsg = `${'添加'}hellllllo${'一个文本'}hellllllo{"这是另一个文本"}`

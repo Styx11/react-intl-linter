@@ -33,6 +33,8 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 		// 单双引号之间的文本内容
 		const string = match[1] || match[2]
 
+		if (!string) continue
+
 		// 以 react-intl= 或 $= 开头的特殊字符串匹配
 		const specialStringMatch = SpecialStringRegx.exec(string)
 		const invalidParams = specialStringMatch ? !!inValidParamsRegx.exec(specialStringMatch[1].trim()) : false
