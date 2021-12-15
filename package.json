@@ -1,6 +1,6 @@
 {
 	"name": "react-intl-linter",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"publisher": "styx11",
 	"description": "vscode linter extension for react-intl",
 	"repository": "git@github.com:Styx11/react-intl-linter.git",
@@ -20,6 +20,42 @@
 		"onLanguage:html",
 		"onLanguage:vue"
 	],
+	"contributes": {
+		"configurationDefaults": {
+			"[json]": {
+				"editor.insertSpaces": true,
+				"editor.tabSize": 4,
+				"editor.autoIndent": "none"
+			}
+		},
+		"configuration": {
+			"type": "object",
+			"title": "ReactIntlLinter",
+			"properties": {
+				"reactIntlLinter.zhConfigName": {
+					"type": "string",
+					"default": "zh_CN",
+					"markdownDescription": "中文配置文件名（不包括后缀）"
+				},
+				"reactIntlLinter.enConfigName": {
+					"type": "string",
+					"default": "en_US",
+					"markdownDescription": "英文国际化配置文件名（不包括后缀）"
+				},
+				"reactIntlLinter.intlConfigPath": {
+					"type": "string",
+					"default": "src/intl",
+					"markdownDescription": "国际化配置文件夹路径名，例如 `src/intl`（相对于工作区跟路径）"
+				},
+				"reactIntlLinter.intlCode": {
+					"type": "string",
+					"default": "react-intl",
+					"enum": ["react-intl", "vue-i18n"],
+					"markdownDescription": "期望转换的国际化框架，支持 `react-intl`，`vue-i18n`。\n`react-intl` 对应代码为 `intl.formatMessage({id: ...})` ，`vueI18n` 对应代码为 `$t('id')`"
+				}
+			}
+		}
+	},
 	"capabilities": {
 		"codeActionProvider": true
 	},
