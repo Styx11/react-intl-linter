@@ -2,8 +2,9 @@
 
 import path = require("path");
 import { ProgressLocation, Uri, window as Window, workspace } from "vscode";
+import ConfigManager, { LinterConfigItem } from "../ConfigManager";
 
-import { JSON_SPACE } from "./constant";
+import { JSON_SPACE } from "../constant";
 
 /**
 * 获取工作区下国际化配置文件 json 路径
@@ -29,8 +30,10 @@ export const initializeWorkplaceIntlConfig = async (intlTempPath: string, worksp
 {
 	if (!workspaceIntlConfigPath) return
 
-	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'zh_CN.json')
-	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'en_US.json')
+	const zhName = ConfigManager.getInstance().getConfig(LinterConfigItem.zhConfigName)
+	const enName = ConfigManager.getInstance().getConfig(LinterConfigItem.enConfigName)
+	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, `${zhName}.json`)
+	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, `${enName}.json`)
 
 	// 初始化整个文件夹
 	try
@@ -78,8 +81,10 @@ export const getIntlConfig = async (
 	if (!workspaceIntlConfigPath) return [undefined, undefined]
 
 	// 工作区国际化配置文件路径
-	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'zh_CN.json')
-	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'en_US.json')
+	const zhName = ConfigManager.getInstance().getConfig(LinterConfigItem.zhConfigName)
+	const enName = ConfigManager.getInstance().getConfig(LinterConfigItem.enConfigName)
+	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, `${zhName}.json`)
+	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, `${enName}.json`)
 
 	// 获取工作区国际化配置文件内容
 	const [rawZHConfig, rawENConfig] = await Promise.all([
@@ -162,8 +167,10 @@ export const writeConfigIntoWorkSpace = async (zhConfig: Record<string, string>,
 	if (!workspaceIntlConfigPath) return
 
 	// 工作区国际化配置文件路径
-	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'zh_CN.json')
-	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, 'en_US.json')
+	const zhName = ConfigManager.getInstance().getConfig(LinterConfigItem.zhConfigName)
+	const enName = ConfigManager.getInstance().getConfig(LinterConfigItem.enConfigName)
+	const zhPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, `${zhName}.json`)
+	const enPath = getWorkspaceIntlJsonPath(workspaceIntlConfigPath, `${enName}.json`)
 
 	return await Window.withProgress({
 		cancellable: false,

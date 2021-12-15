@@ -26,7 +26,7 @@ export const validateSpecialString = (target: string): [string, SpecialStringPar
  * @param {string} target 特殊字符串中的文本内容
  * @return {*}  {SpecialStringParams[]}
  */
-export const formatSpecialStringParams = (target: string): SpecialStringParams[] =>
+const formatSpecialStringParams = (target: string): SpecialStringParams[] =>
 {
 
 	let match: RegExpExecArray | null
@@ -58,7 +58,7 @@ export const formatSpecialStringParams = (target: string): SpecialStringParams[]
  * @param {string} target
  * @return {*}  {string}
  */
-export const formatSearchText = (target: string): string =>
+const formatSearchText = (target: string): string =>
 {
 	return target.replace(ParamsRegx, '{$1}')
 }

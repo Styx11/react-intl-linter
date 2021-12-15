@@ -2,9 +2,9 @@ import { Uri, window as Window } from 'vscode'
 import { ExecuteCommandSignature } from "vscode-languageclient"
 
 import { LinterCommands } from "../lib/constant"
-import { getIntlConfig, initializeWorkplaceIntlConfig, writeConfigIntoWorkSpace, writeResultIntoIntlConfig } from "../lib/file"
-import { getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgress, processArgsWithSelectResult, getIntlMessage } from "../lib/util"
-import { validateSpecialString } from '../lib/validator'
+import { getIntlConfig, initializeWorkplaceIntlConfig, writeConfigIntoWorkSpace, writeResultIntoIntlConfig } from "../lib/util/file"
+import { getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgress, processArgsWithSelectResult, getIntlMessage } from "../lib/util/utils"
+import { validateSpecialString } from '../lib/util/validator'
 
 /**
  * 命令中间件 - 执行语言服务器发出的抽取中文文本为 react-intl 代码命令

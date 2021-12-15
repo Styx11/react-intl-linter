@@ -1,6 +1,6 @@
 import { window as Window, ProgressLocation, QuickPickItem } from 'vscode'
 import { DocumentSelector } from 'vscode-languageclient'
-import { getBaiduZhTranslation } from './translate/baidu'
+import { getBaiduZhTranslation } from '../translate/baidu'
 
 import
 {
@@ -12,9 +12,12 @@ import
 	CUSTOM_PICK_PLACEHOLDER,
 	INVALID_CUSTOM_ID_MESSAGE,
 	INVALID_INTL_ID_CHARACTER,
+	LinterCode,
+	LinterCodeWithParams,
 	TranslationResultMap
-} from './constant'
-import { SpecialStringParams, specialStringParams2String } from './validator'
+} from '../constant'
+import { SpecialStringParams } from './validator'
+import ConfigManager, { LinterConfigItem } from '../ConfigManager'
 
 /**
  * 通过数字获取用以区分相同翻译结果的 intl id
@@ -40,6 +43,7 @@ export const getCleanIntlId = (translationResult: string): string =>
 {
 	return translationResult
 		.replace(INVALID_INTL_ID_CHARACTER, '')
+		.trim()
 		.toUpperCase()
 		.replace(/\s+/g, '_')
 }
@@ -53,11 +57,12 @@ export const getCleanIntlId = (translationResult: string): string =>
  */
 export const getIntlMessage = (intlId: string, params?: SpecialStringParams[]) =>
 {
+	const intlCodeType = ConfigManager.getInstance().getConfig(LinterConfigItem.intlCode)
 	if (Array.isArray(params) && params.length)
 	{
-		return `intl.formatMessage({ id: '${intlId}' }, ${specialStringParams2String(params)})`
+		return LinterCodeWithParams[intlCodeType](intlId, params)
 	}
-	return `intl.formatMessage({ id: '${intlId}' })`
+	return LinterCode[intlCodeType](intlId)
 }
 
 /**

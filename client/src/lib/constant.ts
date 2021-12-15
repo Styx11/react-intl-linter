@@ -1,3 +1,5 @@
+import { IntlCodeType } from "./ConfigManager"
+import { SpecialStringParams, specialStringParams2String } from "./util/validator"
 
 // 激活插件的语言文件，与根目录下的 package.json 中的 activationEvents 保持一致
 export const ActivationLanguage = [
@@ -13,6 +15,19 @@ export const ActivationLanguage = [
 export enum LinterCommands
 {
 	Extract = 'react-intl-linter.extract',    // 抽取中文字符串为 react-intl 代码
+}
+
+// intlCode 配置对应的代码 formatter 函数
+export const LinterCode: { [key in IntlCodeType]: (intlId: string) => string } = {
+	[IntlCodeType.REACT_INTL]: (intlId: string) => `intl.formatMessage({ id: '${intlId}' })`,
+	[IntlCodeType.VUE_I18N]: (intlId: string) => `$t('${intlId}')`,
+}
+
+export const LinterCodeWithParams: { [key in IntlCodeType]: (intlId: string, params: SpecialStringParams[]) => string } = {
+	[IntlCodeType.REACT_INTL]:
+		(intlId: string, params: SpecialStringParams[]) => `intl.formatMessage({ id: '${intlId}' }, ${specialStringParams2String(params)})`,
+	[IntlCodeType.VUE_I18N]:
+		(intlId: string, params: SpecialStringParams[]) => `$t('${intlId}', ${specialStringParams2String(params)})`,
 }
 
 // 翻译结果 Map 缓存，将在 deactive 的时候清除
@@ -40,3 +55,6 @@ export const INVALID_CUSTOM_ID_MESSAGE = '国际化代码 id 只能由大写字�
 
 // intl id 中的非法字符
 export const INVALID_INTL_ID_CHARACTER = /[^A-Za-z\s]/ig
+
+// configuration 配置域名
+export const CONFIG_SECTION = 'reactIntlLinter'

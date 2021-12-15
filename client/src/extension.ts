@@ -1,11 +1,12 @@
 'use strict';
 
 import * as path from 'path';
-import { ExtensionContext, window as Window, Uri, workspace } from 'vscode';
+import { ExtensionContext, Uri, window as Window, workspace } from 'vscode';
 import { ExecuteCommandSignature, LanguageClient, LanguageClientOptions, RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
+import ConfigManager, { LinterConfigItem } from './lib/ConfigManager';
 import { LinterCommands, TranslationResultMap } from './lib/constant';
-import { getDocumentSelector } from './lib/util';
+import { getDocumentSelector } from './lib/util/utils';
 import ExtractMiddleware from './middleware/extract';
 
 let client: LanguageClient;
@@ -23,8 +24,8 @@ export async function activate(context: ExtensionContext): Promise<void>
 	const workspaceFolderPath = workspace.workspaceFolders && workspace.workspaceFolders[0]
 
 	// 工作区国际化配置文件夹路径
-	const workspaceIntlConfigPath = workspaceFolderPath && Uri.joinPath(workspaceFolderPath.uri, path.join('/src', 'intl'))
-
+	const workspaceIntlConfigFolerPath = ConfigManager.getInstance().getConfig(LinterConfigItem.intlConfigPath)
+	const workspaceIntlConfigPath = workspaceFolderPath && Uri.joinPath(workspaceFolderPath.uri, workspaceIntlConfigFolerPath)
 
 	// 语言服务器配置
 	let serverOptions: ServerOptions = {
