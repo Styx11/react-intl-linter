@@ -8,7 +8,7 @@
 
 'react-intl=你好，{status: 无敌的}{name: Fred 哥}';
 
-'$=你好，{name: Fred 哥}'
+'$=你好，{nameTitle: Fred 哥}'
 
 '$=共 {total: 100} 条记录，第 {page: 1}/{totalPage: 10} 页'
 

@@ -312,6 +312,7 @@
     "GRID_IMG": "方格网示意图",
     "GRID_TABLE": "方格网表格",
     "HEIGHT_BENCHMARK": "高程基准",
+    "HELLO_NAMETITLE": "你好，{name_title}",
     "HELLO_WORLD": "你好，世界!",
     "HOME_COLLECTION": "上门采集",
     "HOME_COLLECTION_DESC": "在经过上门时间预约后，由XX提供人员完成现场数据采集、数据处理、数据交付等后续流程，完成后您可以在XX云平台查收数据成果。",

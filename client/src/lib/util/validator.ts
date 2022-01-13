@@ -1,3 +1,5 @@
+import { snakeCase } from 'snake-case'
+
 
 // 特殊字符串参数对象
 // 例如：'react-intl=你好，{name: Fred 哥}' 中的 {name: 'Fred 哥'}
@@ -35,7 +37,9 @@ const formatSpecialStringParams = (target: string): SpecialStringParams[] =>
 
 	while ((match = ParamsRegx.exec(target)))
 	{
-		const key = match[1]
+		// 百度翻译会将 rawMessage -> rawmessage
+		// 所以我们将参数名统一转为下划线命名
+		const key = snakeCase(match[1])
 		const value = match[2]
 
 		if (params.find(p => key in p))
@@ -60,7 +64,9 @@ const formatSpecialStringParams = (target: string): SpecialStringParams[] =>
  */
 const formatSearchText = (target: string): string =>
 {
-	return target.replace(ParamsRegx, '{$1}')
+	// 百度翻译会将 rawMessage -> rawmessage
+	// 所以我们将翻译文本统一转为下划线命名
+	return target.replace(ParamsRegx, (_, p1) => `{${snakeCase(p1)}}`)
 }
 
 

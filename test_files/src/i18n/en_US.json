@@ -312,6 +312,7 @@
     "GRID_IMG": "Grid image",
     "GRID_TABLE": "Grid table",
     "HEIGHT_BENCHMARK": "Height Benchmark",
+    "HELLO_NAMETITLE": "Hello, {name_title}",
     "HELLO_WORLD": "Hello World!",
     "HOME_COLLECTION": "Home collection",
     "HOME_COLLECTION_DESC": "After the on-site appointment,the staff provided by Qizhi will complete the on-site data collection,data processing,data delivery and other follow-up procedures. After completion,you can check the data results on the Qizhi cloud platform.",
