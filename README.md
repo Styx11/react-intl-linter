@@ -131,13 +131,30 @@ const transENResult = 'Hello, {name}'
 
 ```
 
-🚨注意：因为百度翻译会将驼峰字符串转化为普通的字符串形式
+⚠️注意：因为百度翻译会将驼峰字符串转化为普通的字符串形式
 ```ts
 'totalPage'
 // 👇
 'totalpage'
 ```
-所以我们目前只能把驼峰属性名改为普通的字符串形式或使用下划线
+所以我们会统一将驼峰命名形式的参数转为下划线命名的形式
+```ts
+// 目标特殊文本
+const message = '$=我说：{rawMessage: "你好"}'
+// 👇
+// 替换后的 react-intl 代码
+const intl = intl.formatMessage({ id: "I_SAID_RAWMESSAGE" }, {raw_message: "你好"})
+
+// 对应配置
+// en_US
+{
+	"I_SAID_RAWMESSAGE": "I said: {raw_message}"
+}
+// zh_CN
+{
+	"I_SAID_RAWMESSAGE": "我说: {raw_message}"
+}
+```
 
 ## 配置
 本插件提供了诸如国际化配置文件夹路径、国际化配置文件名称和不同框架下的国际化代码等配置项可供用户在 `settings.json` 文件下自定义：
@@ -154,7 +171,7 @@ reactIntlLinter.intlCode|`react-intl`\|`vue-i18n`|`react-intl`|目标国际化�
 修改配置后，你需要重启 VS Code
 
 ## Sponsor
-由于我使用的翻译借口是需要收费的😅，所以如果这个插件你用的爽的话或许可以 Buy me a Coffee☕️
+由于我使用的翻译接口是需要收费的😅，所以如果这个插件你用的爽的话或许可以 Buy me a Coffee☕️
 
 ![](https://s3.bmp.ovh/imgs/2021/12/ed04d7e65151baef.jpeg) ![](https://s3.bmp.ovh/imgs/2021/12/e21aa23150ba2e13.jpeg)
 
