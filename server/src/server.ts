@@ -8,6 +8,7 @@ import
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { validateMessage } from './lib/validator';
+import CommentManager from './lib/comment/CommentManager';
 import { getCodeActionMessage, debounce, ContentChangeDelay, ExtensionSource, LinterCommands } from './lib/util';
 
 const connection = createConnection(ProposedFeatures.all);
@@ -38,6 +39,7 @@ connection.onInitialize(() =>
 documents.onDidOpen((event: TextDocumentChangeEvent<TextDocument>) =>
 {
 	const document = event.document
+	CommentManager.getInstance().setUriDocument(document.uri, document.getText())
 	const diagnostics = validateMessage(document)
 	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
 });
@@ -46,6 +48,7 @@ documents.onDidOpen((event: TextDocumentChangeEvent<TextDocument>) =>
 documents.onDidChangeContent(debounce((event: TextDocumentChangeEvent<TextDocument>) =>
 {
 	const document = event.document
+	CommentManager.getInstance().setUriDocument(document.uri, document.getText())
 	const diagnostics = validateMessage(document)
 	connection.sendDiagnostics({ uri: document.uri, version: document.version, diagnostics })
 }, ContentChangeDelay));
