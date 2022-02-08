@@ -2,7 +2,8 @@ import { TextDocument } from "vscode-languageserver-textdocument"
 import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver-types";
 import * as isChinese from 'is-chinese'
 
-import { StringRegx, DiagnosticMessage, SpecialStringRegx, inValidParamsRegx, ExtensionSource } from "./util";
+import { StringRegx, DiagnosticMessage, SpecialStringRegx, inValidParamsRegx, ExtensionSource, getLineCount } from "./util";
+import CommentManager from "./comment/CommentManager";
 
 const MaxDiagnosticCount = 100
 
@@ -46,6 +47,10 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 		// 特殊字符串内容，如：'react-intl=你好，{name: Fred 哥}' 中的 '你好，{name: Fred 哥}'
 		const specialString = specialStringMatch ? specialStringMatch[1].trim() : undefined
 
+		const targetString = specialString || string.trim()
+
+		if (!CommentManager.getInstance().checkEnableCommentRules(textDocument.uri, getLineCount(text, match.index))) continue
+
 		// 错误信息
 		const diagnostic: Diagnostic = {
 			severity: DiagnosticSeverity.Warning,
@@ -53,7 +58,7 @@ export const validateMessage = (textDocument: TextDocument): Diagnostic[] =>
 				start: textDocument.positionAt(match.index),
 				end: textDocument.positionAt(match.index + rawString.length)
 			},
-			message: `${specialString || string.trim()}${DiagnosticMessage}`,
+			message: `${targetString}${DiagnosticMessage}`,
 			source: ExtensionSource,
 
 		};

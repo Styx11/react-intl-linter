@@ -39,6 +39,18 @@ export const getCodeActionMessage = (message: string): [string, string] =>
 }
 
 /**
+ * 获取 end 位置开头的字符串在 target 字符串中的第几行（行数从零开始）
+ *
+ * @param {string} target 原始字符串
+ * @param {number} [end] 目标字符串开始位置
+ * @return {*}  {number} 目标字符串在原始字符串上的行数
+ */
+export const getLineCount = (target: string, end?: number): number =>
+{
+	return target.slice(0, end).split('\n').length - 1
+}
+
+/**
  * debounce for fn
  * @param fn target function
  * @param wait wait millisecond
