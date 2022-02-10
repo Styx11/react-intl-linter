@@ -14,7 +14,9 @@ export const ActivationLanguage = [
 // 从语言服务器发出的要执行的插件命令
 export enum LinterCommands
 {
-	Extract = 'react-intl-linter.extract',    // 抽取中文字符串为 react-intl 代码
+	Extract = 'react-intl-linter.extract',          // 抽取中文字符串为 react-intl 代码
+	DisableLine = 'react-intl-linter.disable-line', // 在中文代码前一行添加 ri-lint-disable-nextline 注释
+	DisableFile = 'react-intl-linter.disable-file', // 在当前文件开始行添加 ri-lint-disable 注释
 }
 
 // intlCode 配置对应的代码 formatter 函数
