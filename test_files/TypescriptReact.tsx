@@ -20,6 +20,13 @@
 // ri-lint-enable
 '添加'
 
+const tabTest = () =>
+{
+    const validMessage = true
+        ? 'test disabling linter for line in tab case'
+        : '这是一个测试'
+}
+
 // https://github.com/Styx11/react-intl-linter/issues/7
 const validMessage = true ? '' : '你好'; const followMessage = true ? '你好' : ''
 
