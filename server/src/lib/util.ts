@@ -18,12 +18,6 @@ export const ContentChangeDelay = 600
 
 export const ExtensionSource = 'react-intl-linter'
 
-// 从语言服务器发出的要执行的插件命令
-export enum LinterCommands
-{
-	Extract = 'react-intl-linter.extract',    // 抽取中文字符串为 react-intl 代码
-}
-
 /**
  * 获取 CodeAction 信息，包含引号之间的中文文本
  *
