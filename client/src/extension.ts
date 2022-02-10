@@ -7,6 +7,8 @@ import { ExecuteCommandSignature, LanguageClient, LanguageClientOptions, RevealO
 import ConfigManager, { LinterConfigItem } from './lib/ConfigManager';
 import { LinterCommands, TranslationResultMap } from './lib/constant';
 import { getDocumentSelector } from './lib/util/utils';
+import DisableFileMiddleware from './middleware/disable-file';
+import DisableLineMiddleware from './middleware/disable-line';
 import ExtractMiddleware from './middleware/extract';
 
 let client: LanguageClient;
@@ -48,7 +50,14 @@ export async function activate(context: ExtensionContext): Promise<void>
 					switch (command)
 					{
 						case LinterCommands.Extract:
-							return await ExtractMiddleware(intlConfigTemp, workspaceIntlConfigPath, args, next)
+							await ExtractMiddleware(intlConfigTemp, workspaceIntlConfigPath, args, next);
+							break;
+						case LinterCommands.DisableLine:
+							DisableLineMiddleware(args, next);
+							break;
+						case LinterCommands.DisableFile:
+							DisableFileMiddleware(args, next);
+							break;
 						default:
 							return
 					}
