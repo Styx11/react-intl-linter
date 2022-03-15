@@ -11,7 +11,7 @@ export const SpecialStringRegx = /^(?:react-intl|\$)=([^\n]+)/u
 export const inValidParamsRegx = /\{\s*([A-Za-z_]+):\s*\}/u
 
 // 错误信息
-export const DiagnosticMessage = ' is a Chinese sentence'
+export const DiagnosticMessage = ' can be transferred to intl code'
 
 // debounce 文本更新回调时间 ms
 export const ContentChangeDelay = 600
