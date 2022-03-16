@@ -1,7 +1,8 @@
 // @desc configuration 配置管理对象
 
 import { workspace } from 'vscode'
-import { CONFIG_SECTION } from './constant'
+import { CONFIG_SECTION } from '../lib/constant'
+import { SupportLanguage } from '../lib/translate/TranslateManager'
 
 export const enum IntlCodeType
 {
@@ -12,8 +13,10 @@ export const enum IntlCodeType
 // 配置项目，与 package.json 保持一致
 export const enum LinterConfigItem
 {
-	zhConfigName = 'zhConfigName',
-	enConfigName = 'enConfigName',
+	localLanguage = 'localLanguage',
+	intlLanguage = 'intlLanguage',
+	localLanguageConfigName = 'localLanguageConfigName',
+	intlLanguageConfigName = 'intlLanguageConfigName',
 	intlConfigPath = 'intlConfigPath',
 	intlCode = 'intlCode',
 }
@@ -21,8 +24,10 @@ export const enum LinterConfigItem
 // 配置接口
 export interface LinterConfig
 {
-	[LinterConfigItem.zhConfigName]: string;    // 中文配置文件名
-	[LinterConfigItem.enConfigName]: string;    // 英文配置文件名
+	[LinterConfigItem.localLanguage]: SupportLanguage;   // 本地语言
+	[LinterConfigItem.intlLanguage]: SupportLanguage[];   // 目标国际化语言
+	[LinterConfigItem.localLanguageConfigName]: string;       // 本地语言配置文件名
+	[LinterConfigItem.intlLanguageConfigName]: string[];      // 国际化语言配置文件名数组，与 intlLanguage 长度保持一致
 	[LinterConfigItem.intlConfigPath]: string;  // 国际化配置文件夹路径
 	[LinterConfigItem.intlCode]: IntlCodeType;  // 国际化代码模版
 }
@@ -30,8 +35,10 @@ export interface LinterConfig
 // 默认配置，与 package.json 中的默认配置保持一致
 const _defaultConfig: { [key in LinterConfigItem]: LinterConfig[key] } =
 {
-	[LinterConfigItem.zhConfigName]: 'zh_CN',
-	[LinterConfigItem.enConfigName]: 'en_US',
+	[LinterConfigItem.localLanguage]: SupportLanguage.ZH,
+	[LinterConfigItem.intlLanguage]: [SupportLanguage.EN],
+	[LinterConfigItem.localLanguageConfigName]: 'zh_CN',
+	[LinterConfigItem.intlLanguageConfigName]: ['en_US'],
 	[LinterConfigItem.intlConfigPath]: 'src/intl',
 	[LinterConfigItem.intlCode]: IntlCodeType.REACT_INTL,
 }
