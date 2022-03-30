@@ -4,9 +4,10 @@ import * as path from 'path';
 import { ExtensionContext, Uri, window as Window, workspace } from 'vscode';
 import { ExecuteCommandSignature, LanguageClient, LanguageClientOptions, RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
-import ConfigManager, { LinterConfigItem } from './lib/ConfigManager';
-import { LinterCommands, TranslationResultMap } from './lib/constant';
-import { getDocumentSelector } from './lib/util/utils';
+import ConfigManager, { LinterConfigItem } from './config/ConfigManager';
+import { LinterCommands } from './lib/constant';
+import { TranslationResultMap } from './lib/translate/TranslateManager';
+import { getDocumentSelector } from './lib/util';
 import DisableFileMiddleware from './middleware/disable-file';
 import DisableLineMiddleware from './middleware/disable-line';
 import ExtractMiddleware from './middleware/extract';
@@ -20,7 +21,7 @@ export async function activate(context: ExtensionContext): Promise<void>
 	const serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
 
 	// 国际化配置模版路径
-	const intlConfigTemp = context.asAbsolutePath(path.join('client', 'src', 'lib', 'intl'))
+	const intlConfigTemp = context.asAbsolutePath(path.join('client', 'src', 'lib', 'intl', 'template'))
 
 	// 工作区的真实文件路径
 	const workspaceFolderPath = workspace.workspaceFolders && workspace.workspaceFolders[0]
