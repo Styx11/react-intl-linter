@@ -2,8 +2,9 @@ import { Uri, window as Window } from 'vscode'
 import { ExecuteCommandSignature } from "vscode-languageclient"
 
 import { LinterCommands } from "../lib/constant"
-import { getIntlConfig, initializeWorkplaceIntlConfig, writeConfigIntoWorkSpace, writeResultIntoIntlConfig } from "../lib/util/file"
-import { getExistingIntl, getIntlIdWithQuickPick, getTranslateResultsWithProgress, processArgsWithSelectResult, getIntlMessage } from "../lib/util/utils"
+import IntlConfigManager from '../lib/intl/IntlConfigManager'
+import { getIntlMessage } from '../lib/intl/utils'
+import VSCodeUIManager from '../lib/ui/VSCodeUIManager'
 import { validateSpecialString } from '../lib/util/validator'
 
 /**
@@ -19,37 +20,37 @@ const ExtractMiddleware = async (intlConfigTemp: string, workspaceIntlConfigPath
 {
 	const rawText = args[1] as string
 
-	if (!rawText) return
+	if (!rawText || !workspaceIntlConfigPath) return
 
 	// 想要替换的中文文本
 	const [searchText, specialStringParams] = validateSpecialString(rawText)
 
 	// 初始化工作区国际化配置文件
-	await initializeWorkplaceIntlConfig(intlConfigTemp, workspaceIntlConfigPath)
+	await IntlConfigManager.getInstance().initializeIntlConfig(workspaceIntlConfigPath, intlConfigTemp)
 
-	// 获取已有配置文件
-	const [zhConfig, enConfig] = await getIntlConfig(workspaceIntlConfigPath)
+	// 获取已有所有配置文件
+	const oldConfigs = await IntlConfigManager.getInstance().readAllConfig()
 
 	// 查找工作区是否已存在对应中文文本配置
-	const { intlId, zhText, enText } = getExistingIntl(searchText, zhConfig, enConfig)
+	const intlId = IntlConfigManager.getInstance().getExistingIntlId(searchText, oldConfigs)
 
 	// 工作区已存在对应配置
-	if (intlId && zhText && enText)
+	if (intlId)
 	{
 		// 传给语言服务器的 onExecuteCommand 函数
 		return next(LinterCommands.Extract, [...args, getIntlMessage(intlId, specialStringParams)])
 	}
 
 	// 翻译结果相关进度条
-	const translateResults = await getTranslateResultsWithProgress(searchText)
+	const translateResults = await VSCodeUIManager.getInstance().getTranslateResultsWithProgress(searchText)
 
 	// picker 选择结果
-	const [selectedIntlId, translationText] = await getIntlIdWithQuickPick(translateResults, zhConfig);
+	const selectedIntlId = await VSCodeUIManager.getInstance().getIntlIdWithQuickPick(translateResults, oldConfigs[0]);
 
 	// 获得处理后的参数，用于传给语言服务器的 onExecuteCommand 函数
-	const { newArgs, customIntlId } = await processArgsWithSelectResult(args, selectedIntlId, specialStringParams)
+	const { newArgs, customIntlId } = await VSCodeUIManager.getInstance().processArgsWithSelectResult(args, selectedIntlId, specialStringParams)
 
-	if (!newArgs || !selectedIntlId || !translationText) return
+	if (!newArgs || !selectedIntlId || !translateResults.length) return
 
 	try
 	{
@@ -57,21 +58,16 @@ const ExtractMiddleware = async (intlConfigTemp: string, workspaceIntlConfigPath
 		// 文件写入错误和文本替换并不冲突，只不过需要用户重新执行一遍替换操作来执行文件写入或手动写入文件
 		next(LinterCommands.Extract, newArgs)
 
-		// 获取新的 intl 配置文件
-		const [newZhConfig, newEnConfig] = await writeResultIntoIntlConfig(
+		// 写入配置文件，包括将搜索文本写入本地配置文件（这个操作是费时的）
+		await IntlConfigManager.getInstance().writeConfigIntoWorkSpace(
 			customIntlId || selectedIntlId,
-			searchText,
-			translationText,
-			zhConfig,
-			enConfig
+			[searchText, ...translateResults],
+			oldConfigs
 		)
-
-		// 在这里执行写入配置文件操作（这个操作是费时的）
-		await writeConfigIntoWorkSpace(newZhConfig, newEnConfig, workspaceIntlConfigPath)
 	}
 	catch (e)
 	{
-		Window.showErrorMessage('写入国际化文件发生错误！')
+		Window.showErrorMessage('写入国际化文件发生错误：', String(e).toString())
 		console.log('write config failed', e)
 	}
 }
