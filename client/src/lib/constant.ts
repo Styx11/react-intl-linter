@@ -1,5 +1,3 @@
-import { IntlCodeType } from "./ConfigManager"
-import { SpecialStringParams, specialStringParams2String } from "./util/validator"
 
 // 激活插件的语言文件，与根目录下的 package.json 中的 activationEvents 保持一致
 export const ActivationLanguage = [
@@ -18,22 +16,6 @@ export enum LinterCommands
 	DisableLine = 'react-intl-linter.disable-line', // 在中文代码前一行添加 ri-lint-disable-nextline 注释
 	DisableFile = 'react-intl-linter.disable-file', // 在当前文件开始行添加 ri-lint-disable 注释
 }
-
-// intlCode 配置对应的代码 formatter 函数
-export const LinterCode: { [key in IntlCodeType]: (intlId: string) => string } = {
-	[IntlCodeType.REACT_INTL]: (intlId: string) => `intl.formatMessage({ id: '${intlId}' })`,
-	[IntlCodeType.VUE_I18N]: (intlId: string) => `$t('${intlId}')`,
-}
-
-export const LinterCodeWithParams: { [key in IntlCodeType]: (intlId: string, params: SpecialStringParams[]) => string } = {
-	[IntlCodeType.REACT_INTL]:
-		(intlId: string, params: SpecialStringParams[]) => `intl.formatMessage({ id: '${intlId}' }, ${specialStringParams2String(params)})`,
-	[IntlCodeType.VUE_I18N]:
-		(intlId: string, params: SpecialStringParams[]) => `$t('${intlId}', ${specialStringParams2String(params)})`,
-}
-
-// 翻译结果 Map 缓存，将在 deactive 的时候清除
-export const TranslationResultMap = new Map<string, string[]>()
 
 export const CUSTOM_INTL_ID_REGX = /[A-Z_]+/
 
