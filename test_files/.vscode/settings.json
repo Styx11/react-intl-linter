@@ -1,4 +1,4 @@
 {
-    "reactIntlLinter.intlConfigPath": "src/i18n",
-    "reactIntlLinter.intlCode": "vue-i18n",
+    "reactIntlLinter.intlConfigPath": "src/intl",
+    "reactIntlLinter.intlCode": "react-intl",
 }
