@@ -1,6 +1,6 @@
 {
 	"name": "react-intl-linter",
-	"version": "1.2.0",
+	"version": "2.0.0",
 	"publisher": "styx11",
 	"description": "vscode linter extension for react-intl",
 	"repository": "git@github.com:Styx11/react-intl-linter.git",
@@ -32,16 +32,56 @@
 			"type": "object",
 			"title": "ReactIntlLinter",
 			"properties": {
-				"reactIntlLinter.zhConfigName": {
-					"type": "string",
-					"default": "zh_CN",
-					"markdownDescription": "中文配置文件名（不包括后缀）"
-				},
-				"reactIntlLinter.enConfigName": {
-					"type": "string",
-					"default": "en_US",
-					"markdownDescription": "英文国际化配置文件名（不包括后缀）"
-				},
+                "reactIntlLinter.localLanguage": {
+                    "type": "string",
+                    "default": "zh",
+                    "enum": [
+                        "zh",
+						"en",
+						"jp",
+						"cht"
+                    ],
+                    "enumDescriptions": [
+                        "中文",
+						"英文",
+						"日文",
+						"繁体中文"
+                    ],
+                    "markdownDescription": "本地语言，即代码中使用的本地语言"
+                },
+                "reactIntlLinter.localLanguageConfigName": {
+                    "type": "string",
+                    "default": "zh_CN",
+                    "markdownDescription": "本地语言配置文件名（不包括后缀）"
+                },
+                "reactIntlLinter.intlLanguage": {
+                    "type": "array",
+                    "default": ["en"],
+                    "items": {
+                        "type": "string",
+                        "enum": [
+							"zh",
+                            "en",
+                            "jp",
+                            "cht"
+                        ],
+                        "enumDescriptions": [
+							"中文",
+                            "英文",
+                            "日文",
+                            "繁体中文"
+                        ]
+                    },
+                    "markdownDescription": "国际化语言，即支持的 react-intl 国际化目标语言"
+                },
+                "reactIntlLinter.intlLanguageConfigName": {
+                    "type": "array",
+                    "default": ["en_US"],
+					"items": {
+						"type": "string"
+					},
+                    "markdownDescription": "国际化语言配置文件名数组（不包括后缀，**必须与国际化语言数组配置一一对应**）"
+                },
 				"reactIntlLinter.intlConfigPath": {
 					"type": "string",
 					"default": "src/intl",
