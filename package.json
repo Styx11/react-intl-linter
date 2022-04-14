@@ -1,6 +1,6 @@
 {
 	"name": "react-intl-linter",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"publisher": "styx11",
 	"description": "vscode linter extension for react-intl",
 	"repository": "git@github.com:Styx11/react-intl-linter.git",
