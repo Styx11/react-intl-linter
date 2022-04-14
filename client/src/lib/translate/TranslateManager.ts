@@ -29,9 +29,6 @@ export default class TranslateManager
 	// 目标国际语言
 	private _intlLanguages: SupportLanguage[]
 
-	// 本地语言到所有国际语言的翻译 Token
-	private _translateQuerys: string[]
-
 	// 用于生成 intl id 的英文文本
 	// 来源可能为：
 	//   1. 本地语言即为英文
@@ -60,8 +57,6 @@ export default class TranslateManager
 
 		this._intlLanguages = [...new Set<SupportLanguage>(intlLanguages)]
 
-		this._translateQuerys = []
-
 		this._intlIdENText = ''
 	}
 
@@ -75,11 +70,7 @@ export default class TranslateManager
 	 */
 	private getTranslateSourceQueue(query: string): string[]
 	{
-		if (!this._translateQuerys.length)
-		{
-			this._translateQuerys = this._intlLanguages.map(il => getBaiduSource(query, this._localLanguage, il))
-		}
-		return this._translateQuerys
+		return this._intlLanguages.map(il => getBaiduSource(query, this._localLanguage, il))
 	}
 
 	/**
